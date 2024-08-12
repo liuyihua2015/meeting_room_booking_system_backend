@@ -83,18 +83,20 @@ export class UserService {
       isFrozen: user.isFrozen,
       isAdmin: user.isAdmin,
       roles: user.roles.map((item) => item.name),
-      permissions: user.roles.reduce((arr, item) => {
-        item.permissions.forEach((permission) => {
-          if (arr.indexOf(permission) === -1) {
-            arr.push(permission);
+      permissions: user.roles
+        .flatMap((role) => role.permissions)
+        .reduce((acc, curr) => {
+          const existingPermission = acc.find((p) => p.id === curr.id);
+          if (!existingPermission) {
+            acc.push(curr);
           }
-        });
-        return arr;
-      }, []),
+          return acc;
+        }, []),
     };
 
     return vo;
   }
+
   async findUserById(userId: number, isAdmin: boolean) {
     const user = await this.userRepository.findOne({
       where: {
