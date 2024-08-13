@@ -8,7 +8,7 @@ import {
 import { RegisterUserDto } from './dto/register-user.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { md5 } from 'src/utils';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -190,7 +190,78 @@ export class UserService {
       return '用户信息修改成功';
     } catch (e) {
       this.logger.error(e, UserService);
-      return '用户信息修改成功';
+      return '用户信息修改失败';
     }
+  }
+  async freezeUserById(userId: number) {
+    try {
+      const foundUser = await this.userRepository.findOneBy({
+        id: userId,
+      });
+      if (foundUser) {
+        foundUser.isFrozen = true;
+        await this.userRepository.save(foundUser);
+        return '冻结成功';
+      } else {
+        throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
+      }
+    } catch (e) {
+      this.logger.error(e, UserService);
+      return '冻结失败,用户不存在';
+      // throw new HttpException('冻结失败,用户不存在', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async findUsers(
+    username: string,
+    nickName: string,
+    email: string,
+    pageNo: number,
+    pageSize: number,
+  ) {
+    if (pageNo < 1) {
+      pageNo = 1;
+    }
+    if (pageSize < 1) {
+      pageSize = 2;
+    }
+    if (pageSize > 99) {
+      pageSize = 99;
+    }
+    const skipCount = (pageNo - 1) * pageSize;
+
+    const condition: Record<string, any> = {};
+
+    if (username) {
+      condition.username = Like(`%${username}%`);
+    }
+    if (nickName) {
+      condition.nickName = Like(`%${nickName}%`);
+    }
+    if (email) {
+      condition.email = Like(`%${email}%`);
+    }
+
+    const [users, totalCount] = await this.userRepository.findAndCount({
+      select: [
+        'id',
+        'username',
+        'nickName',
+        'email',
+        'phoneNumber',
+        'isFrozen',
+        'headPic',
+        'createTime',
+      ],
+
+      skip: skipCount,
+      take: pageSize,
+      where: condition,
+    });
+
+    return {
+      users,
+      totalCount,
+    };
   }
 }
