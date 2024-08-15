@@ -38,6 +38,7 @@ import { Booking } from './booking/entities/booking.entity';
           entities: [User, Role, Permission, MeetingRoom, Booking],
           poolSize: 10,
           connectorPackage: 'mysql2',
+          timezone: 'Z',
           extra: {
             authPlugin: 'sha256_password',
           },
