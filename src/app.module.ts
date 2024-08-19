@@ -17,13 +17,19 @@ import { MeetingRoomModule } from './meeting-room/meeting-room.module';
 import { MeetingRoom } from './meeting-room/entities/meeting-room.entity';
 import { BookingModule } from './booking/booking.module';
 import { Booking } from './booking/entities/booking.entity';
+import * as path from 'path';
 
 @Module({
   imports: [
+    // ConfigModule.forRoot({
+    //   isGlobal: true,
+    //   envFilePath: 'src/.env',
+    // }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'src/.env',
+      envFilePath: path.join(__dirname, '.env'),
     }),
+
     TypeOrmModule.forRootAsync({
       useFactory(configService: ConfigService) {
         return {
