@@ -51,12 +51,15 @@ export class BookingService {
     }
     if (bookingTimeRangeStart) {
       if (!bookingTimeRangeEnd) {
-        bookingTimeRangeEnd = bookingTimeRangeStart + 1000 * 60 * 60;
+        bookingTimeRangeEnd =
+          Number(bookingTimeRangeStart) + 1000 * 60 * 60 * 24;
       }
+
       condition.startTime = Between(
-        new Date(bookingTimeRangeStart),
-        new Date(bookingTimeRangeEnd),
+        new Date(Number(bookingTimeRangeStart)),
+        new Date(Number(bookingTimeRangeEnd)),
       );
+      console.log('[ condition.startTime ] >', condition.startTime);
     }
 
     const [bookings, totalCount] = await this.entityManager.findAndCount(

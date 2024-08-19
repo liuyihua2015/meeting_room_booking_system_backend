@@ -59,6 +59,7 @@ export class MeetingRoomController {
   @ApiResponse({
     type: MeetingRoomListVo,
   })
+  @RequireLogin()
   @Get('list')
   async list(
     @Query('pageNo', new DefaultValuePipe(1), generateParseIntPipe('pageNo'))
