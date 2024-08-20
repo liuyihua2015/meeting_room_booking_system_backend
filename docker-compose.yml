@@ -1,5 +1,14 @@
 version: '3.8'
 services:
+  fe-app:
+    # image: fe-container:first
+    image: registry.cn-hangzhou.aliyuncs.com/liuiyhua/room-system-admin:first
+    ports:
+      - 80:80
+    depends_on:
+      - nest-app
+    networks:
+      - common-network
   nest-app:
     build:
       context: ./
@@ -7,8 +16,8 @@ services:
     depends_on:
       - mysql-container
       - redis-container
-    ports:
-      - 3005:3005
+    # ports:
+    #   - 3005:3005
     networks:
       - common-network
   mysql-container:
