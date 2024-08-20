@@ -28,7 +28,7 @@ services:
     volumes:
       - /Users/liuyihua/redis-data:/data
     ports:
-      - '3739:3739'
+      - '6379:6379'
     networks:
       - common-network
 networks:
