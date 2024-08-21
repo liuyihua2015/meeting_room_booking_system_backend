@@ -17,6 +17,7 @@ import { MeetingRoomModule } from './meeting-room/meeting-room.module';
 import { MeetingRoom } from './meeting-room/entities/meeting-room.entity';
 import { BookingModule } from './booking/booking.module';
 import { Booking } from './booking/entities/booking.entity';
+import { MinioModule } from './minio/minio.module';
 import * as path from 'path';
 
 @Module({
@@ -69,6 +70,7 @@ import * as path from 'path';
     EmailModule,
     MeetingRoomModule,
     BookingModule,
+    MinioModule,
   ],
   controllers: [AppController],
   providers: [
