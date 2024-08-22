@@ -19,7 +19,7 @@ import { BookingModule } from './booking/booking.module';
 import { Booking } from './booking/entities/booking.entity';
 import { MinioModule } from './minio/minio.module';
 import * as path from 'path';
-
+``;
 @Module({
   imports: [
     // ConfigModule.forRoot({
@@ -28,7 +28,10 @@ import * as path from 'path';
     // }),
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: path.join(__dirname, '.env'),
+      envFilePath: [
+        path.join(__dirname, '.env'),
+        path.join(__dirname, '.dev.env'),
+      ],
     }),
 
     TypeOrmModule.forRootAsync({

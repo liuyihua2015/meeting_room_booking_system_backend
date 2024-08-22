@@ -1,14 +1,15 @@
 version: '3.8'
 services:
-  fe-app:
-    # image: fe-container:first
-    image: registry.cn-hangzhou.aliyuncs.com/liuiyhua/room-system-admin:first
-    ports:
-      - 80:80
-    depends_on:
-      - nest-app
-    networks:
-      - common-network
+  # fe-app:
+  #   # image: fe-container:first
+  #   image: registry.cn-hangzhou.aliyuncs.com/liuiyhua/room-system-admin:first
+  #   ports:
+  #     - 80:80
+  #   depends_on:
+  #     - nest-app
+  #   networks:
+  #     - common-network
+
   nest-app:
     build:
       context: ./
@@ -16,17 +17,21 @@ services:
     depends_on:
       - mysql-container
       - redis-container
-    # ports:
-    #   - 3005:3005
+    restart: always
+    ports:
+      - 3005:3005
     networks:
       - common-network
+
   mysql-container:
     image: mysql
     volumes:
       - /Users/liuyihua/mysql-data:/var/lib/mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci # 设置默认字符集
     environment:
       MYSQL_DATABASE: meeting_room_booking_system
       MYSQL_ROOT_PASSWORD: lyh123456
+    restart: always
     ports:
       - '3306:3306'
     networks:
@@ -36,10 +41,26 @@ services:
     image: redis
     volumes:
       - /Users/liuyihua/redis-data:/data
+    restart: always
     ports:
       - '6379:6379'
     networks:
       - common-network
+
+  minio-container:
+    image: bitnami/minio:latest
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - /Users/liuyihua/minio:/bitnami/minio/data
+    environment:
+      MINIO_ROOT_USER: liuyihua
+      MINIO_ROOT_PASSWORD: lyh123456
+    restart: always
+    networks:
+      - common-network
+
 networks:
   common-network:
     driver: bridge
