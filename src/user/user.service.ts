@@ -9,7 +9,7 @@ import { RegisterUserDto } from './dto/register-user.dto';
 import { RedisService } from 'src/redis/redis.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository } from 'typeorm';
-import { User } from './entities/user.entity';
+import { LoginType, User } from './entities/user.entity';
 import { md5 } from 'src/utils';
 import { LoginUserDto } from './dto/login-user.dto';
 import { LoginUserVo } from './vo/login-user.vo';
@@ -62,6 +62,7 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: {
         username: loginUserDto.username,
+        loginType: LoginType.USERNAME_PASSWORD,
         isAdmin,
       },
       relations: ['roles', 'roles.permissions'],
@@ -98,6 +99,31 @@ export class UserService {
     };
 
     return vo;
+  }
+
+  async registerByGoogleInfo(email: string, nickName: string, headPic: string) {
+    const newUser = new User();
+    newUser.email = email;
+    newUser.nickName = nickName;
+    newUser.headPic = headPic;
+    newUser.password = '';
+    newUser.username = email + Math.random().toString().slice(2, 10);
+    newUser.loginType = LoginType.GOOGLE;
+    newUser.isAdmin = false;
+
+    return this.userRepository.save(newUser);
+  }
+
+  async findUserByEmail(email: string) {
+    const user = await this.userRepository.findOne({
+      where: {
+        email: email,
+        isAdmin: false,
+      },
+      relations: ['roles', 'roles.permissions'],
+    });
+
+    return user;
   }
 
   async findUserById(userId: number, isAdmin: boolean) {
